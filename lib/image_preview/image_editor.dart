@@ -2,12 +2,14 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:simple_image_cropper/image_preview/corner_grabber.dart';
 import 'package:simple_image_cropper/image_preview/image_editor_mode.dart';
+import 'package:simple_image_cropper/simple_image_cropper.dart';
 
-class ImageEditor extends CustomPainter {
+class ImageEditor extends ChangeNotifier implements CustomPainter {
   final CornerGrabber _cornerGrabber;
   final ui.Image image;
   final Offset imgOffset;
   final double scaleRatio;
+  final Function(Region) onRegionSelected;
 
   Offset _panDownPt;
   ImageEditorMode _mode;
@@ -16,6 +18,7 @@ class ImageEditor extends CustomPainter {
       {required this.image,
       required this.scaleRatio,
       required this.imgOffset,
+      required this.onRegionSelected,
       required Color outerRectColor,
       required double outerRectStrokeWidth,
       required Color innerRectColor,
@@ -67,6 +70,7 @@ class ImageEditor extends CustomPainter {
       default:
         break;
     }
+    notifyListeners();
   }
 
   void onPanDown(Offset globalPt) {
@@ -85,18 +89,30 @@ class ImageEditor extends CustomPainter {
 
       _mode = mode;
     }
+    notifyListeners();
   }
 
   void onPanEnd() {
     if (_cornerGrabber.isReady()) {
       _panDownPt = _cornerGrabber.boudingRectItem.topLeft;
       _mode = ImageEditorMode.boudingRectReady;
+      onRegionSelected(region);
     }
+    notifyListeners();
   }
 
   Offset globalToLocalPt(Offset global) => (global - imgOffset) * scaleRatio;
 
-  List<double>? get region {
+  Region get region {
     return _cornerGrabber.region;
   }
+
+  @override
+  bool? hitTest(ui.Offset position) => null;
+
+  @override
+  SemanticsBuilderCallback? get semanticsBuilder => null;
+
+  @override
+  bool shouldRebuildSemantics(covariant CustomPainter oldDelegate) => false;
 }
