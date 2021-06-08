@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:simple_image_cropper/simple_image_cropper.dart';
 
 class BoundingRectItem {
   final double imageWidth;
@@ -8,7 +9,7 @@ class BoundingRectItem {
   final Color innerRectColor;
   final double innerRectStrokeWidth;
 
-  Rect rect;
+  Region rect;
 
   BoundingRectItem(
       {required this.imageWidth,
@@ -16,7 +17,7 @@ class BoundingRectItem {
       required double ratio,
       required this.innerRectColor,
       required double innerRectStrokeWidth})
-      : rect = ui.Rect.fromLTRB(0, 0, 0, 0),
+      : rect = Region.fromLTRB(0, 0, 0, 0),
         innerRectStrokeWidth = innerRectStrokeWidth * ratio;
 
   void resize(Offset tl, Offset br) {
@@ -48,47 +49,42 @@ class BoundingRectItem {
     right = min(right, imageWidth - stkWidCenter);
     bottom = min(bottom, imageHeight - stkWidCenter);
 
-    rect = ui.Rect.fromPoints(Offset(left, top), Offset(right, bottom));
+    rect = Region(
+        x1: left.toInt(),
+        y1: top.toInt(),
+        x2: right.toInt(),
+        y2: bottom.toInt());
   }
 
   void setPos(Offset tl) {
     if (!isReady()) return;
 
-    final Offset br = tl + Offset(rect.width, rect.height);
-    double left = tl.dx;
-    double right = br.dx;
-    double top = tl.dy;
-    double bottom = br.dy;
+    final Offset br =
+        tl + Offset(rect.width.toDouble(), rect.height.toDouble());
+    int left = tl.dx.toInt();
+    int right = br.dx.toInt();
+    int top = tl.dy.toInt();
+    int bottom = br.dy.toInt();
 
-    final double stkWidCenter = innerRectStrokeWidth / 2;
+    final int stkWidCenter = innerRectStrokeWidth ~/ 2;
     if (tl.dx < stkWidCenter || br.dx > imageWidth - stkWidCenter) {
-      left = rect.left;
-      right = rect.right;
+      left = rect.x1;
+      right = rect.x2;
     }
 
     if (tl.dy < stkWidCenter || br.dy > imageHeight - stkWidCenter) {
-      top = rect.top;
-      bottom = rect.bottom;
+      top = rect.y1;
+      bottom = rect.y2;
     }
 
-    rect = ui.Rect.fromPoints(Offset(left, top), Offset(right, bottom));
+    rect = Region(
+        x1: left.toInt(),
+        y1: top.toInt(),
+        x2: right.toInt(),
+        y2: bottom.toInt());
   }
 
-  List<double>? toRegion() {
-    if (!isReady()) return null;
-
-    final double left = rect.left;
-    final double top = rect.top;
-    final double right = rect.right;
-    final double bottom = rect.bottom;
-
-    return [
-      left / imageWidth,
-      top / imageHeight,
-      (right - left) / imageWidth,
-      (bottom - top) / imageHeight
-    ];
-  }
+  Region get region => rect;
 
   void paint(Canvas canvas) {
     final Paint _painter = Paint()
@@ -96,9 +92,11 @@ class BoundingRectItem {
       ..style = PaintingStyle.stroke
       ..strokeWidth = innerRectStrokeWidth;
 
-    canvas.drawRect(rect, _painter);
+    final Rect innerRect = ui.Rect.fromLTRB(rect.x1.toDouble(),
+        rect.y1.toDouble(), rect.x2.toDouble(), rect.y2.toDouble());
+    canvas.drawRect(innerRect, _painter);
   }
 
-  void clear() => rect = ui.Rect.fromLTRB(0, 0, 0, 0);
+  void clear() => rect = Region.fromLTRB(0, 0, 0, 0);
   bool isReady() => !rect.isEmpty;
 }

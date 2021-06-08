@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:simple_image_cropper/image_preview/bounding_rect_item.dart';
 import 'package:simple_image_cropper/image_preview/corner.dart';
 import 'package:simple_image_cropper/image_preview/image_editor_mode.dart';
+import 'package:simple_image_cropper/simple_image_cropper.dart';
 
 class CornerGrabber {
   final List<Corner> _corners;
@@ -79,9 +80,9 @@ class CornerGrabber {
 
   bool isReady() => boundingRectItem.isReady();
 
-  Rect get boudingRectItem => boundingRectItem.rect;
+  Region get boudingRectItem => boundingRectItem.rect;
 
-  List<double>? get region => boundingRectItem.toRegion();
+  Region get region => boundingRectItem.region;
 
   ImageEditorMode? handleEvent(Offset eventLoc) {
     if (_corners[0].acceptEvent(eventLoc)) {
