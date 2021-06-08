@@ -19,7 +19,7 @@ To use this plugin, add `simple_image_cropper` as a dependency in the pubspec.ya
 - **image**: The image to be cropped
 - **width**: The width of this widget
 - **height**: The height of this widget
-- **onRegionSelected**: A callback function to retrieve the selected region
+- **image**: The image provider
 
 ## Customization
 
@@ -38,11 +38,25 @@ To use this plugin, add `simple_image_cropper` as a dependency in the pubspec.ya
 ## Example
 
 ```dart
-import 'package:flutter/services.dart' show ByteData, rootBundle;
 import 'package:flutter/material.dart';
 import 'package:simple_image_cropper/simple_image_cropper.dart';
-import 'dart:ui' as ui;
 
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Image Cropper Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: Demo(),
+    );
+  }
+}
 
 class Demo extends StatefulWidget {
   Demo({Key? key}) : super(key: key);
@@ -52,50 +66,37 @@ class Demo extends StatefulWidget {
 }
 
 class _DemoState extends State<Demo> {
-  ui.Image? _image;
-  Region region = Region.fromLTRB(0, 0, 0, 0);
+  late ImageProvider _image;
+  final GlobalKey<SimpleImageCropperState> cropKey = GlobalKey();
 
   @override
   void initState() {
-    loadImages();
+    _image = AssetImage('assets/images/demo.jpg');
     super.initState();
-  }
-
-  Future<void> loadImages() async {
-    final ByteData byteData = await rootBundle.load({YOUR IMAGE PATH}});
-    final ui.Image image =
-        await decodeImageFromList(byteData.buffer.asUint8List());
-    setState(() => _image = image);
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_image == null) return CircularProgressIndicator();
-
     final Size size = MediaQuery.of(context).size;
     return Scaffold(
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.crop),
           onPressed: () async {
-            ui.Image? croppedImage = await SimpleImageCropper.cropImage(
-                image: _image!, region: region);
-            setState(() => _image = croppedImage);
+            Image? image = await cropKey.currentState?.cropImage();
+            if (image != null) {
+              setState(() => _image = image.image);
+            }
           },
         ),
         body: Container(
             height: size.height,
             width: size.width,
             child: SimpleImageCropper(
+              key: cropKey,
               height: size.height,
               width: size.width,
-              image: _image!,
-              onRegionSelected: onRegionSelected,
+              image: _image,
             )));
   }
-
-  void onRegionSelected(Region region) {
-    this.region = region;
-  }
 }
-
 ```

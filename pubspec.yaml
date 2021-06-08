@@ -1,6 +1,6 @@
 name: simple_image_cropper
 description: A new Flutter package project.
-version: 0.0.1
+version: 0.0.3
 homepage: https://github.com/Jeffreytht/simple_image_cropper
 
 environment:
@@ -10,6 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  lint: ^1.0.0
 
 dev_dependencies:
   flutter_test:

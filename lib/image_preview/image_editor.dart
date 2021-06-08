@@ -9,7 +9,7 @@ class ImageEditor extends ChangeNotifier implements CustomPainter {
   final ui.Image image;
   final Offset imgOffset;
   final double scaleRatio;
-  final Function(Region) onRegionSelected;
+  final Function(Region)? onRegionSelected;
 
   Offset _panDownPt;
   ImageEditorMode _mode;
@@ -18,7 +18,7 @@ class ImageEditor extends ChangeNotifier implements CustomPainter {
       {required this.image,
       required this.scaleRatio,
       required this.imgOffset,
-      required this.onRegionSelected,
+      this.onRegionSelected,
       required Color outerRectColor,
       required double outerRectStrokeWidth,
       required Color innerRectColor,
@@ -40,7 +40,7 @@ class ImageEditor extends ChangeNotifier implements CustomPainter {
             imageHeight: image.height.toDouble(),
             scaleRatio: scaleRatio),
         _mode = ImageEditorMode.none,
-        _panDownPt = Offset(0, 0);
+        _panDownPt = const Offset(0, 0);
 
   @override
   void paint(ui.Canvas canvas, ui.Size size) {
@@ -96,7 +96,8 @@ class ImageEditor extends ChangeNotifier implements CustomPainter {
     if (_cornerGrabber.isReady()) {
       _panDownPt = _cornerGrabber.boudingRectItem.topLeft;
       _mode = ImageEditorMode.boudingRectReady;
-      onRegionSelected(region);
+
+      if (onRegionSelected != null) onRegionSelected!(region);
     }
     notifyListeners();
   }
