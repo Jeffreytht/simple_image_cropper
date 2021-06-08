@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:image_cropper/image_preview/bounding_rect_item.dart';
-import 'package:image_cropper/image_preview/corner.dart';
-import 'package:image_cropper/image_preview/image_editor_mode.dart';
+import 'package:simple_image_cropper/image_preview/bounding_rect_item.dart';
+import 'package:simple_image_cropper/image_preview/corner.dart';
+import 'package:simple_image_cropper/image_preview/image_editor_mode.dart';
 
 class CornerGrabber {
   final List<Corner> _corners;
