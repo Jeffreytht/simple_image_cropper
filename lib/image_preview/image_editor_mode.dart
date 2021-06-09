@@ -1,6 +1,1 @@
-enum ImageEditorMode {
-  none,
-  boudingRectReady,
-  resizing,
-  moving
-}
+enum ImageEditorMode { none, boudingRectReady, resizing, moving }
