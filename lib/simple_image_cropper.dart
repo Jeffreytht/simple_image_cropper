@@ -10,31 +10,53 @@ import 'package:flutter/services.dart';
 import 'package:simple_image_cropper/image_preview/image_editor.dart';
 
 class Region {
+  /// Left
   final int x1;
+
+  /// Top
   final int y1;
+
+  /// Right
   final int x2;
+
+  /// Bottom
   final int y2;
 
   const Region(
       {required this.x1, required this.x2, required this.y1, required this.y2});
 
+  /// Create region from left, top, right and bottom
   factory Region.fromLTRB(int x1, int y1, int x2, int y2) {
     return Region(x1: x1, x2: x2, y1: y1, y2: y2);
   }
 
+  /// Get the width of this region
   int get width => max(x2 - x1, 0);
+
+  /// Get the height of this region
   int get height => max(y2 - y1, 0);
+
+  /// Check whether the area of this region is less or equal than 1
   bool get isEmpty => width * height <= 1;
 
+  /// Return the top left of this region
   Offset get topLeft => Offset(x1.toDouble(), y1.toDouble());
+
+  /// Return the bottom right of this region
   Offset get bottomRight => Offset(x2.toDouble(), y2.toDouble());
 }
 
 class SimpleImageCropperState extends State<SimpleImageCropper> {
+  /// A widget that implemented [CustomPaint] to draw image and corner grabber in canvas
   ImageEditor? imageEditor;
   ImageStream? _imageStream;
   ImageInfo? _imageInfo;
-  final double margin = 30.0;
+
+  /// The widget padding
+  ///
+  /// To ensure that the corner grabber is inside the widget. The corner radius
+  /// is 15.0
+  double get padding => 30.0;
 
   @override
   Widget build(BuildContext context) {
@@ -49,14 +71,14 @@ class SimpleImageCropperState extends State<SimpleImageCropper> {
 
     final Size imgSize = Size(imgWidth, imgHeight);
     final Size editorSize =
-        Size(widget.width - margin * 2, widget.height - margin * 2);
+        Size(widget.width - padding * 2, widget.height - padding * 2);
 
     imageEditor = ImageEditor(
       image: _imageInfo!.image,
       scaleRatio: _getRatio(editorSize, imgSize),
       imgOffset:
           _getOffset(editorSize, imgSize, _getRatio(editorSize, imgSize)) +
-              Offset(margin, margin),
+              Offset(padding, padding),
       onRegionSelected: widget.onRegionSelected,
       outerRectColor: widget.outerRectColor,
       outerRectStrokeWidth: widget.outerRectStrokeWidth,
@@ -76,8 +98,8 @@ class SimpleImageCropperState extends State<SimpleImageCropper> {
             color: Colors.black,
             alignment: Alignment.center,
             child: SizedBox(
-                height: widget.height - margin * 2,
-                width: widget.width - margin * 2,
+                height: widget.height - padding * 2,
+                width: widget.width - padding * 2,
                 child: FittedBox(
                     child: SizedBox(
                         height: imgHeight,
@@ -97,6 +119,11 @@ class SimpleImageCropperState extends State<SimpleImageCropper> {
     imageEditor!.onPanEnd();
   }
 
+  /// Return the ratio of widget to image
+  ///
+  /// Due to image size will be large than the widget size, we have to
+  /// calculate the ratio, so that the corner grabber can be drawn at correct
+  /// location
   double _getRatio(Size widgetSize, Size imageSize) {
     final double widgetWidth = widgetSize.width;
     final double widgetHeight = widgetSize.height;
@@ -108,6 +135,10 @@ class SimpleImageCropperState extends State<SimpleImageCropper> {
     return ratioX;
   }
 
+  /// Get the offset of images
+  ///
+  /// As image will not fill the entire widget, we have to calculate the top
+  /// left coodinate of image in the widget.
   Offset _getOffset(Size widgetSize, Size imageSize, double scaleRatio) {
     final imgWidth = imageSize.width / scaleRatio;
     final imgHeight = imageSize.height / scaleRatio;
@@ -154,6 +185,7 @@ class SimpleImageCropperState extends State<SimpleImageCropper> {
     super.dispose();
   }
 
+  /// Crop the images based on the selected region
   Future<Image?> cropImage() async {
     if (imageEditor == null) return null;
     final ui.Image image = _imageInfo!.image;
@@ -193,17 +225,40 @@ class SimpleImageCropperState extends State<SimpleImageCropper> {
 }
 
 class SimpleImageCropper extends StatefulWidget {
+  /// The image to be cropped
   final ImageProvider image;
+
+  /// The width of this widget
   final double width;
+
+  /// The height of this widget
   final double height;
+
+  /// The color of outer rectangle in corner grabber
   final Color outerRectColor;
+
+  /// The stroke width of outer rectangle in corner grabber
   final double outerRectStrokeWidth;
+
+  /// The color of inner rectangle in corner grabber
   final Color innerRectColor;
+
+  /// The stoke width of inner rectangle in corner grabber
   final double innerRectStrokeWidth;
+
+  /// The color of top left corner in corner grabber
   final Color tlCornerBgColor;
+
+  /// The font color of top left corner in corner grabber
   final Color tlCornerFontColor;
+
+  /// The color of bottom right corner in corner grabber
   final Color brCornerBgColor;
+
+  /// The font color of bottom right corner in corner grabber
   final Color brCornerFontColor;
+
+  /// The callback function that return selected region
   final Function(Region)? onRegionSelected;
 
   const SimpleImageCropper(

@@ -16,10 +16,9 @@ To use this plugin, add `simple_image_cropper` as a dependency in the pubspec.ya
 
 ## Required parameters
 
-- **image**: The image to be cropped
+- **image**: The image to be cropped.
 - **width**: The width of this widget
 - **height**: The height of this widget
-- **image**: The image provider
 
 ## Customization
 

@@ -1,3 +1,7 @@
+## 0.0.5
+
+* Update documentation and modify license to the BSD license
+
 ## 0.0.4
 
 * Add documentation and CHANGELOG.md

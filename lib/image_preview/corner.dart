@@ -1,13 +1,25 @@
 import 'package:flutter/material.dart';
 
 class Corner {
+  /// Icon size
   final double _fontSize;
+
+  /// Radius of corner
   final double _radius;
+
+  /// Scale ratio from [SimpleImageCropper]
   final double scaleRatio;
+
+  /// Icon in the corner
   final IconData icon;
+
+  /// Icon color
   final Color fontColor;
+
+  /// Corner color
   final Color bgColor;
 
+  /// Location of corner
   Offset loc = const Offset(0, 0);
 
   Corner(
@@ -38,6 +50,9 @@ class Corner {
     textPainter.paint(canvas, loc - Offset(_fontSize / 2, _fontSize / 2));
   }
 
+  /// Check whether user tap on the corner
+  ///
+  /// 10 is the tap's tolerance, allowing users to tap on the corner easier.
   bool acceptEvent(Offset eventLoc) {
     final double tolerance = _radius + 10 * scaleRatio;
     if ((eventLoc.dx - loc.dx).abs() <= tolerance &&

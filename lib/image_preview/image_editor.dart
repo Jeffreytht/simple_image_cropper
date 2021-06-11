@@ -6,12 +6,23 @@ import 'package:simple_image_cropper/simple_image_cropper.dart';
 
 class ImageEditor extends ChangeNotifier implements CustomPainter {
   final CornerGrabber _cornerGrabber;
+
+  /// Image to be cropped
   final ui.Image image;
+
+  /// The offset from [SimpleImageCropper]
   final Offset imgOffset;
+
+  /// The ratio from [SimpleImageCropper]
   final double scaleRatio;
+
+  /// The callback from [SimpleImageCropper]
   final Function(Region)? onRegionSelected;
 
+  /// The point where user tap
   Offset _panDownPt;
+
+  /// Current ImageEditor's mode
   ImageEditorMode _mode;
 
   ImageEditor(
@@ -64,7 +75,7 @@ class ImageEditor extends ChangeNotifier implements CustomPainter {
         break;
       case ImageEditorMode.moving:
         _cornerGrabber.setPos(currPt - _panDownPt);
-        _panDownPt = currPt - _cornerGrabber.boudingRectItem.topLeft;
+        _panDownPt = currPt - _cornerGrabber.region.topLeft;
         break;
       case ImageEditorMode.boudingRectReady:
       default:
@@ -84,7 +95,7 @@ class ImageEditor extends ChangeNotifier implements CustomPainter {
       if (mode == null) return;
 
       if (mode == ImageEditorMode.moving) {
-        _panDownPt = currPt - _cornerGrabber.boudingRectItem.topLeft;
+        _panDownPt = currPt - _cornerGrabber.region.topLeft;
       }
 
       _mode = mode;
@@ -94,7 +105,7 @@ class ImageEditor extends ChangeNotifier implements CustomPainter {
 
   void onPanEnd() {
     if (_cornerGrabber.isReady()) {
-      _panDownPt = _cornerGrabber.boudingRectItem.topLeft;
+      _panDownPt = _cornerGrabber.region.topLeft;
       _mode = ImageEditorMode.boudingRectReady;
 
       if (onRegionSelected != null) onRegionSelected!(region);
@@ -102,8 +113,10 @@ class ImageEditor extends ChangeNotifier implements CustomPainter {
     notifyListeners();
   }
 
+  /// Convert global position [global] to local position
   Offset globalToLocalPt(Offset global) => (global - imgOffset) * scaleRatio;
 
+  /// Get the region from corner grabber
   Region get region {
     return _cornerGrabber.region;
   }

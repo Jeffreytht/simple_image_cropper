@@ -1,14 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:simple_image_cropper/image_preview/bounding_rect_item.dart';
+import 'package:simple_image_cropper/image_preview/inner_rect_item.dart';
 import 'package:simple_image_cropper/image_preview/corner.dart';
 import 'package:simple_image_cropper/image_preview/image_editor_mode.dart';
 import 'package:simple_image_cropper/simple_image_cropper.dart';
 
 class CornerGrabber {
+  /// Top left corner and bottom right corner.
   final List<Corner> _corners;
-  final BoundingRectItem boundingRectItem;
+
+  /// The inner rectangle
+  final InnerRectItem boundingRectItem;
+
+  /// The margin of inner rectangle
   final Offset margin;
+
+  /// The color of outer ractangle
   final Color outerRectColor;
+
+  /// The stroke width of outer rectangle
   final double outerRectStrokeWidth;
 
   CornerGrabber(
@@ -23,7 +32,7 @@ class CornerGrabber {
       required Color tlCornerFontColor,
       required Color brCornerBgColor,
       required Color brCornerFontColor})
-      : boundingRectItem = BoundingRectItem(
+      : boundingRectItem = InnerRectItem(
             imageWidth: imageWidth,
             imageHeight: imageHeight,
             ratio: scaleRatio,
@@ -44,27 +53,30 @@ class CornerGrabber {
               scaleRatio: scaleRatio)
         ]);
 
+  /// Set the position of corner grabber
   void setPos(Offset loc) {
     boundingRectItem.setPos(loc);
     _updateCornersGrabber();
   }
 
+  /// Resize the corner grabber
   void resize(Offset tl, Offset br) {
     boundingRectItem.resize(tl, br);
     _updateCornersGrabber();
   }
 
+  /// Move the corner to the correct position
   void _updateCornersGrabber() {
-    _corners[0].loc = boundingRectItem.rect.topLeft - margin;
-    _corners[1].loc = boundingRectItem.rect.bottomRight + margin;
+    _corners[0].loc = boundingRectItem.region.topLeft - margin;
+    _corners[1].loc = boundingRectItem.region.bottomRight + margin;
   }
 
   void paint(Canvas canvas) {
     if (!boundingRectItem.isReady()) return;
     boundingRectItem.paint(canvas);
 
-    final rect = Rect.fromPoints(boundingRectItem.rect.topLeft - margin,
-        boundingRectItem.rect.bottomRight + margin);
+    final rect = Rect.fromPoints(boundingRectItem.region.topLeft - margin,
+        boundingRectItem.region.bottomRight + margin);
 
     final Paint _painter = Paint()
       ..color = outerRectColor
@@ -78,12 +90,15 @@ class CornerGrabber {
     }
   }
 
+  /// Check whether the corner grabber is drawn
   bool isReady() => boundingRectItem.isReady();
 
-  Region get boudingRectItem => boundingRectItem.rect;
-
+  /// Get the selected region
   Region get region => boundingRectItem.region;
 
+  /// Handle the tap event
+  ///
+  /// Check if user tap on the corners or rectangle.
   ImageEditorMode? handleEvent(Offset eventLoc) {
     if (_corners[0].acceptEvent(eventLoc)) {
       boundingRectItem.clear();
