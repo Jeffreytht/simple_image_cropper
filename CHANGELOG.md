@@ -1,4 +1,4 @@
-## 0.0.5
+## 1.0.0
 
 * Update documentation and modify license to the BSD license
 

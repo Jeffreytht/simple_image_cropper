@@ -1,6 +1,6 @@
 name: simple_image_cropper
 description: A Flutter plugin for cropping images based on selected region. 
-version: 0.0.4
+version: 1.0.0
 homepage: https://github.com/Jeffreytht/simple_image_cropper
 
 environment:
@@ -16,3 +16,5 @@ dev_dependencies:
     sdk: flutter
 
 flutter:
+  assets:
+    - assets/images/
